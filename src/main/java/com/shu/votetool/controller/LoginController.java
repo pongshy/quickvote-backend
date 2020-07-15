@@ -1,15 +1,19 @@
 package com.shu.votetool.controller;
 
 import com.shu.votetool.model.Result;
+import com.shu.votetool.model.request.UserInfo;
 import com.shu.votetool.model.response.ErrorResult;
 import com.shu.votetool.service.LoginService;
 import com.shu.votetool.tool.ResultTool;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin
@@ -36,7 +40,7 @@ public class LoginController {
         if (code.equals("1")) {
             return new ResponseEntity<Object>(
                     new ErrorResult(
-                            404,
+                            400,
                             HttpStatus.BAD_REQUEST,
                             "未接收到code",
                             "/login"
@@ -48,8 +52,22 @@ public class LoginController {
         return loginService.loginWX(code);
     }
 
-//    @ApiOperation(value = "用户信息更新接口", httpMethod = "POST")
-//    @PostMapping("/userInfo")
-//    public ResponseEntity<Object> userInfo(@RequestBody )
+    @ApiOperation(value = "用户信息更新接口", httpMethod = "POST")
+    @PostMapping("/userInfo")
+    public ResponseEntity<Object> updateUserInfo(HttpServletRequest request, @RequestBody @Validated UserInfo userInfo) throws Exception {
+        String openid = request.getHeader("openid");
+
+        if (StringUtils.isEmpty(openid)) {
+            return new ResponseEntity<Object>(
+                    new ErrorResult(
+                        400,
+                        HttpStatus.BAD_REQUEST,
+                        "未接受到openid",
+                        "/userInfo"
+                    ),
+                    HttpStatus.BAD_REQUEST);
+        }
+        return loginService.updateUserInfo(openid, userInfo);
+    }
 
 }

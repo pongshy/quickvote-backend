@@ -3,6 +3,7 @@ package com.shu.votetool.service.Impl;
 import com.alibaba.fastjson.JSONObject;
 import com.shu.votetool.dao.UserDOMapper;
 import com.shu.votetool.model.entity.UserDO;
+import com.shu.votetool.model.request.UserInfo;
 import com.shu.votetool.model.response.ErrorResult;
 import com.shu.votetool.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 
 /*
   * @Description: 登录接口实现
@@ -97,6 +99,51 @@ public class LoginServiceImpl implements LoginService {
                     "/login"
             ),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /*
+     * @Description: 用户信息插入接口
+     * @Return: org.springframework.http.ResponseEntity
+     * @Author: pongshy
+     * @Date: 2020/7/16
+     **/
+    @Override
+    public ResponseEntity<Object> updateUserInfo(String openid, UserInfo userInfo) throws Exception {
+        try {
+            UserDO userDO = userDOMapper.selectByPrimaryKey(openid);
+
+            if (userDO != null) {
+                userDO.setWname(userInfo.getUsername());
+                userDO.setWimage(userInfo.getAvatarUrl());
+
+                if (userDOMapper.updateByPrimaryKeySelective(userDO) > 0) {
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    throw new SQLException("数据库操作有误");
+                }
+            } else {
+                return new ResponseEntity<Object>(
+                        new ErrorResult(
+                                400,
+                                HttpStatus.BAD_REQUEST,
+                                "数据库中不存在该openid",
+                                "/userInfo"
+                        ),
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+        } catch (Exception ex) {
+            log.info(ex.getMessage());
+            return new ResponseEntity<Object>(
+                    new ErrorResult(
+                            500,
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            ex.getMessage(),
+                            "/userInfo"
+                    ),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }
