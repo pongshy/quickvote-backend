@@ -20,14 +20,14 @@ public class LoginController {
 
     @ApiOperation(value = "测试接口", httpMethod = "GET")
     @GetMapping("/test")
-    public ResponseEntity<Object> testApi() {
+    public ResponseEntity<String> testApi(@RequestParam("value") String value) {
 
-        return new ResponseEntity<Object>(new ErrorResult(404,
-                HttpStatus.BAD_REQUEST,
-                "测试接口",
-                "/login/test"),
-                HttpStatus.OK);
-//        return ResponseEntity.ok(str);
+//        return new ResponseEntity<Object>(new ErrorResult(404,
+//                HttpStatus.BAD_REQUEST,
+//                "测试接口",
+//                "/login/test"),
+//                HttpStatus.OK);
+        return ResponseEntity.ok(value);
     }
 
     @ApiOperation(value = "登录接口", httpMethod = "GET")
@@ -47,5 +47,9 @@ public class LoginController {
 
         return loginService.loginWX(code);
     }
+
+//    @ApiOperation(value = "用户信息更新接口", httpMethod = "POST")
+//    @PostMapping("/userInfo")
+//    public ResponseEntity<Object> userInfo(@RequestBody )
 
 }

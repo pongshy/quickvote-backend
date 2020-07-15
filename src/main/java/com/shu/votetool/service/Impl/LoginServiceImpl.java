@@ -48,12 +48,12 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public ResponseEntity<Object> loginWX(String code) throws Exception {
         try {
-            String url = "https://api.weixin.qq.com/sns/jscode2session?" +
-                    "appid=" + AppId +
+            String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + AppId +
                     "&secret=" + secret +
                     "&js_code=" + code +
                     "&grant_type=authorization_code";
-
+            log.info("code:" + code);
+            log.info(url);
             CloseableHttpClient httpClient = HttpClients.createDefault();
             //请求
             HttpGet httpGet = new HttpGet(url);
@@ -64,11 +64,12 @@ public class LoginServiceImpl implements LoginService {
 
             HttpEntity httpEntity = response.getEntity();
             JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(httpEntity));
-
+            log.info(jsonObject.toJSONString());
             String errcode = jsonObject.getString("errcode");
-            if (errcode.equals("0")) {
+            log.info("errcode = " + errcode);
+            if (errcode == null) {
                 String openid = jsonObject.getString("openid");
-
+                log.info(openid);
                 UserDO userDO = userDOMapper.selectByPrimaryKey(openid);
                 if (userDO == null) {
                     UserDO record = new UserDO();
@@ -76,15 +77,17 @@ public class LoginServiceImpl implements LoginService {
                     record.setOpenid(openid);
                     userDOMapper.insertSelective(record);
                 }
-
                 return new ResponseEntity<Object>(openid, HttpStatus.OK);
             } else if (errcode.equals("-1")) {
                 throw new Exception("系统繁忙，此时请开发者稍候再试");
             } else if (errcode.equals("40029")) {
                 throw new Exception("code无效");
-            } else {
+            } else if (errcode.equals("45011")) {
                 throw new Exception("频率限制，每个用户每分钟100次");
+            } else {
+                throw new Exception("code has been used");
             }
+
         }
         catch (Exception e) {
             log.info(e.getMessage());
