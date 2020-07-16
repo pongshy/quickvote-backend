@@ -22,6 +22,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,7 +123,15 @@ public class VoteServiceImpl implements VoteService {
                     throw new AllException(EmAllException.DATABASE_ERROR);
                 }
 
+                if(voterDOList.isEmpty()){
+                    throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
+                }
+
                 List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
+                HashSet<Integer> hashSet = new HashSet<Integer>(voteSystemIdList);
+                voteSystemIdList.clear();
+                voteSystemIdList.addAll(hashSet);
+
                 VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
                 voteSystemDOExample.createCriteria().andIdIn(voteSystemIdList);
                 voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
@@ -132,6 +141,8 @@ public class VoteServiceImpl implements VoteService {
                 voteSystemDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
                         + ", " + voteSystemListReq.getPerPageNum());
                 voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
+            }else {
+                throw new AllException(EmAllException.DATABASE_ERROR);
             }
 
             if(voteSystemDOList == null){
