@@ -6,6 +6,8 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * program: NewVoteReq
@@ -31,4 +33,7 @@ public class NewVoteReq {
 
     @Range(min = 0, max = 1, message = "是否公开选择为0或1")
     private Integer ispublic;
+
+    @Size(min = 1, message = "至少有一个投票对象")
+    private List<String> candidate;
 }

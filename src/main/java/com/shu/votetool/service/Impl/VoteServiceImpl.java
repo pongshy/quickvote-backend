@@ -1,11 +1,15 @@
 package com.shu.votetool.service.Impl;
 
+import com.shu.votetool.dao.CandidateDOMapper;
 import com.shu.votetool.dao.UserDOMapper;
 import com.shu.votetool.dao.VoteSystemDOMapper;
+import com.shu.votetool.dao.VoterDOMapper;
 import com.shu.votetool.exception.AllException;
 import com.shu.votetool.exception.EmAllException;
+import com.shu.votetool.model.entity.CandidateDO;
 import com.shu.votetool.model.entity.UserDOExample;
 import com.shu.votetool.model.entity.VoteSystemDO;
+import com.shu.votetool.model.entity.VoterDO;
 import com.shu.votetool.model.request.NewVoteReq;
 import com.shu.votetool.model.response.ErrorResult;
 import com.shu.votetool.service.VoteService;
@@ -16,6 +20,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -32,9 +38,16 @@ public class VoteServiceImpl implements VoteService {
     private VoteSystemDOMapper voteSystemDOMapper;
 
     @Resource
+    private VoterDOMapper voterDOMapper;
+
+    @Resource
+    private CandidateDOMapper candidateDOMapper;
+
+    @Resource
     private UserDOMapper userDOMapper;
 
     @Override
+    @Transactional(rollbackFor = AllException.class)
     public ResponseEntity<Object> createVoteSystem(NewVoteReq newVoteReq, String openid) {
         try{
             UserDOExample userDOExample = new UserDOExample();
@@ -63,11 +76,24 @@ public class VoteServiceImpl implements VoteService {
             voteSystemDO.setOpenid(openid);
             int id = voteSystemDOMapper.insertSelective(voteSystemDO);
             if(id > 0){
+                for(String candidate: newVoteReq.getCandidate()){
+                    CandidateDO candidateDO = new CandidateDO();
+                    candidateDO.setCandidateName(candidate);
+                    candidateDO.setVoteId(id);
+                    if(candidateDOMapper.insertSelective(candidateDO) <= 0){
+                        throw new AllException(EmAllException.DATABASE_ERROR);
+                    }
+                }
+
                 return new ResponseEntity<Object>(id, HttpStatus.OK);
             }else{
                 throw new AllException(EmAllException.DATABASE_ERROR);
             }
         }catch (AllException e) {
+            if(e.getMsg().equals("数据库异常或数据有误")){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
+
             log.error(e.getMessage());
             return new ResponseEntity<Object>(new ErrorResult(e.getErrCode(),
                     e.getHttpStatus(),
