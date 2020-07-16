@@ -35,4 +35,17 @@ public class ErrorResult {
         this.message = message;
         this.path = path;
     }
+
+    public ErrorResult(HttpStatus error,
+                       String message,
+                       String path
+    ) {
+        Date date = new Date(System.currentTimeMillis());
+
+        this.timestamp = TimeTool.DateToString(date);
+        this.status = error.value();
+        this.error = error;
+        this.message = message;
+        this.path = path;
+    }
 }

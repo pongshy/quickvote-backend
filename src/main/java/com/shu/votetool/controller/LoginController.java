@@ -24,14 +24,20 @@ public class LoginController {
 
     @ApiOperation(value = "测试接口", httpMethod = "GET")
     @GetMapping("/test")
-    public ResponseEntity<String> testApi(@RequestParam("value") String value) {
+    public ResponseEntity<Object> testApi(@RequestParam("value") String value) {
 
+        return new ResponseEntity<Object>(new ErrorResult(
+                HttpStatus.BAD_REQUEST,
+                "测试",
+                "/test"
+        ),
+                HttpStatus.OK);
 //        return new ResponseEntity<Object>(new ErrorResult(404,
 //                HttpStatus.BAD_REQUEST,
 //                "测试接口",
 //                "/login/test"),
 //                HttpStatus.OK);
-        return ResponseEntity.ok(value);
+//        return ResponseEntity.ok(value);
     }
 
     @ApiOperation(value = "登录接口", httpMethod = "GET")
@@ -45,7 +51,7 @@ public class LoginController {
                             "未接收到code",
                             "/login"
                     ),
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.OK
             );
         }
 
@@ -65,7 +71,7 @@ public class LoginController {
                         "未接受到openid",
                         "/userInfo"
                     ),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.OK);
         }
         return loginService.updateUserInfo(openid, userInfo);
     }
