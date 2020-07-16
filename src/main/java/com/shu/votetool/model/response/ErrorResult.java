@@ -1,5 +1,6 @@
 package com.shu.votetool.model.response;
 
+import com.shu.votetool.exception.AllException;
 import com.shu.votetool.tool.TimeTool;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,16 @@ public class ErrorResult {
         this.status = error.value();
         this.error = error;
         this.message = message;
+        this.path = path;
+    }
+
+    public ErrorResult(AllException ex, String path) {
+        Date date = new Date(System.currentTimeMillis());
+
+        this.timestamp = TimeTool.DateToString(date);
+        this.status = ex.getErrCode();
+        this.error = ex.getHttpStatus();
+        this.message = ex.getMessage();
         this.path = path;
     }
 }

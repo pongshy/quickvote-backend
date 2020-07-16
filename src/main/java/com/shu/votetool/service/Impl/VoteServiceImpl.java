@@ -69,12 +69,13 @@ public class VoteServiceImpl implements VoteService {
             }
         }catch (AllException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<Object>(new ErrorResult(e.getErrCode(),
-                    e.getHttpStatus(),
-                    e.getMsg(),
-                    "/voteSystem"
-            ),
-                    HttpStatus.OK);
+            return new ResponseEntity<Object>(new ErrorResult(e, "/votesystem"), HttpStatus.OK);
+//            return new ResponseEntity<Object>(new ErrorResult(e.getErrCode(),
+//                    e.getHttpStatus(),
+//                    e.getMsg(),
+//                    "/voteSystem"
+//            ),
+//                    HttpStatus.OK);
         }
     }
 }
