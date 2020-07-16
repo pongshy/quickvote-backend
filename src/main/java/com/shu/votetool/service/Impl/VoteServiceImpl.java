@@ -111,15 +111,29 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public ResponseEntity<Object> voteSystemList(VoteSystemListReq voteSystemListReq, String openid) {
         try{
-            VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
-            voteSystemDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
-                                        + ", " + voteSystemListReq.getPerPageNum());
-            VoteSystemDOExample.Criteria criteria = voteSystemDOExample.createCriteria();
+            List<VoteSystemDO> voteSystemDOList = null;
             if(voteSystemListReq.getType() == 0){
-                criteria.andOpenidEqualTo(openid);
+                VoterDOExample voterDOExample = new VoterDOExample();
+                voterDOExample.createCriteria().andOpenidEqualTo(openid);
+                voterDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
+                        + ", " + voteSystemListReq.getPerPageNum());
+                List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
+                if(voterDOList == null){
+                    throw new AllException(EmAllException.DATABASE_ERROR);
+                }
+
+                List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
+                VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
+                voteSystemDOExample.createCriteria().andIdIn(voteSystemIdList);
+                voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
+            }else if(voteSystemListReq.getType() == 1){
+                VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
+                voteSystemDOExample.createCriteria().andOpenidEqualTo(openid);
+                voteSystemDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
+                        + ", " + voteSystemListReq.getPerPageNum());
+                voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
             }
 
-            List<VoteSystemDO> voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
             if(voteSystemDOList == null){
                 throw new AllException(EmAllException.DATABASE_ERROR);
             }
@@ -127,9 +141,6 @@ public class VoteServiceImpl implements VoteService {
             List<Integer> voteIdList = voteSystemDOList.stream().map(VoteSystemDO::getId).collect(Collectors.toList());
 
             //获取所有投票的投票对象列表
-//            CandidateDOExample candidateDOExample = new CandidateDOExample();
-//            candidateDOExample.createCriteria().andVoteIdIn(voteIdList);
-//            List<CandidateDO> candidateDOList = candidateDOMapper.selectByExample(candidateDOExample);
             VoteSystemList voteSystemList = new VoteSystemList();
             voteSystemList.setNum(voteSystemDOList.size());
             voteSystemList.setVoteSystemResList(voteSystemDOList.stream().map(voteSystemDO -> {
