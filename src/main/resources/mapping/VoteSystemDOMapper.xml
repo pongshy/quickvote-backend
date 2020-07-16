@@ -115,7 +115,7 @@
       #{createTime,jdbcType=TIMESTAMP}, #{ispublic,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.shu.votetool.model.entity.VoteSystemDO" >
+  <insert id="insertSelective" parameterType="com.shu.votetool.model.entity.VoteSystemDO" useGeneratedKeys="true" keyProperty="id">
     insert into votesystem
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

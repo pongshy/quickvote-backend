@@ -71,36 +71,20 @@ public class TimeTool {
         }
     }
 
-
     /**
-     * @Description: 判断是否是周末
-     * @Param: [applicationDo]
-     * @Return: java.lang.Boolean
-     * @Author: SoCMo
-     * @Date: 2019/12/19
-     */
-    public static Boolean isWeekend(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        return calendar.get(Calendar.DAY_OF_WEEK) % 6 == 1;
-    }
-
-    /**
-     * @Description: 统一周末记录为周六
-     * @Param: [date]
-     * @Return: java.util.Date
-     * @Author: SoCMo
-     * @Date: 2019/12/19
-     */
-    public static Date weekendFormat(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) return date;
-        else {
-            calendar.add(Calendar.DATE, -1);
-            return calendar.getTime();
+    * @Description: 字符串转化为Date类型，最小单位为秒
+    * @Param: [time]
+    * @return: java.util.Date
+    * @Author: SoCMo
+    * @Date: 2020/7/16
+    */
+    public static Date stringToDate(String time) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            return dateFormat.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -109,4 +93,34 @@ public class TimeTool {
 
         return simpleDateFormat.format(date);
     }
+
+
+    /**
+     * @Description: 返回今日日期, 不包含小时、分钟、秒
+     * @Param: []
+     * @return: java.util.Calendar
+     * @Author: SoCMo
+     * @Date: 2020/3/26
+     */
+    public static Calendar todayCreate() {
+        Calendar calendarNow = Calendar.getInstance();
+        calendarNow.set(calendarNow.get(Calendar.YEAR), calendarNow.get(Calendar.MONTH), calendarNow.get(Calendar.DATE), 0, 0, 0);
+        return calendarNow;
+    }
+
+    /**
+     * @Description: 时单位转时分单位格式
+     * @Param: [hour]
+     * @return: java.lang.String
+     * @Author: SoCMo
+     * @Date: 2020/3/29
+     */
+    public static String timeSlotToString(double hour) {
+        return "" + (int) hour +
+                "时" +
+                (int) ((hour - (int) hour) * 60) +
+                "分";
+    }
+
+
 }
