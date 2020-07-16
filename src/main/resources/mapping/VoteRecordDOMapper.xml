@@ -6,7 +6,6 @@
     <result column="openid" property="openid" jdbcType="VARCHAR" />
     <result column="vote_id" property="voteId" jdbcType="INTEGER" />
     <result column="candidate_id" property="candidateId" jdbcType="INTEGER" />
-    <result column="voting" property="voting" jdbcType="INTEGER" />
     <result column="vote_time" property="voteTime" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
@@ -68,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, openid, vote_id, candidate_id, voting, vote_time
+    id, openid, vote_id, candidate_id, vote_time
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.shu.votetool.model.entity.VoteRecordDOExample" >
     select
@@ -103,11 +102,9 @@
   </delete>
   <insert id="insert" parameterType="com.shu.votetool.model.entity.VoteRecordDO" >
     insert into vote_record (id, openid, vote_id, 
-      candidate_id, voting, vote_time
-      )
+      candidate_id, vote_time)
     values (#{id,jdbcType=INTEGER}, #{openid,jdbcType=VARCHAR}, #{voteId,jdbcType=INTEGER}, 
-      #{candidateId,jdbcType=INTEGER}, #{voting,jdbcType=INTEGER}, #{voteTime,jdbcType=TIMESTAMP}
-      )
+      #{candidateId,jdbcType=INTEGER}, #{voteTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.shu.votetool.model.entity.VoteRecordDO" >
     insert into vote_record
@@ -123,9 +120,6 @@
       </if>
       <if test="candidateId != null" >
         candidate_id,
-      </if>
-      <if test="voting != null" >
-        voting,
       </if>
       <if test="voteTime != null" >
         vote_time,
@@ -143,9 +137,6 @@
       </if>
       <if test="candidateId != null" >
         #{candidateId,jdbcType=INTEGER},
-      </if>
-      <if test="voting != null" >
-        #{voting,jdbcType=INTEGER},
       </if>
       <if test="voteTime != null" >
         #{voteTime,jdbcType=TIMESTAMP},
@@ -173,9 +164,6 @@
       <if test="record.candidateId != null" >
         candidate_id = #{record.candidateId,jdbcType=INTEGER},
       </if>
-      <if test="record.voting != null" >
-        voting = #{record.voting,jdbcType=INTEGER},
-      </if>
       <if test="record.voteTime != null" >
         vote_time = #{record.voteTime,jdbcType=TIMESTAMP},
       </if>
@@ -190,7 +178,6 @@
       openid = #{record.openid,jdbcType=VARCHAR},
       vote_id = #{record.voteId,jdbcType=INTEGER},
       candidate_id = #{record.candidateId,jdbcType=INTEGER},
-      voting = #{record.voting,jdbcType=INTEGER},
       vote_time = #{record.voteTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -208,9 +195,6 @@
       <if test="candidateId != null" >
         candidate_id = #{candidateId,jdbcType=INTEGER},
       </if>
-      <if test="voting != null" >
-        voting = #{voting,jdbcType=INTEGER},
-      </if>
       <if test="voteTime != null" >
         vote_time = #{voteTime,jdbcType=TIMESTAMP},
       </if>
@@ -222,7 +206,6 @@
     set openid = #{openid,jdbcType=VARCHAR},
       vote_id = #{voteId,jdbcType=INTEGER},
       candidate_id = #{candidateId,jdbcType=INTEGER},
-      voting = #{voting,jdbcType=INTEGER},
       vote_time = #{voteTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>

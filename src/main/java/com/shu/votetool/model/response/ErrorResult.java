@@ -56,7 +56,7 @@ public class ErrorResult {
         this.timestamp = TimeTool.DateToString(date);
         this.status = ex.getErrCode();
         this.error = ex.getHttpStatus();
-        this.message = ex.getMessage();
+        this.message = ex.getMsg();
         this.path = path;
     }
 }

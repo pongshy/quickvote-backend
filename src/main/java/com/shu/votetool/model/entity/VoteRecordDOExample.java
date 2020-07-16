@@ -355,66 +355,6 @@ public class VoteRecordDOExample {
             return (Criteria) this;
         }
 
-        public Criteria andVotingIsNull() {
-            addCriterion("voting is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingIsNotNull() {
-            addCriterion("voting is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingEqualTo(Integer value) {
-            addCriterion("voting =", value, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingNotEqualTo(Integer value) {
-            addCriterion("voting <>", value, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingGreaterThan(Integer value) {
-            addCriterion("voting >", value, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingGreaterThanOrEqualTo(Integer value) {
-            addCriterion("voting >=", value, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingLessThan(Integer value) {
-            addCriterion("voting <", value, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingLessThanOrEqualTo(Integer value) {
-            addCriterion("voting <=", value, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingIn(List<Integer> values) {
-            addCriterion("voting in", values, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingNotIn(List<Integer> values) {
-            addCriterion("voting not in", values, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingBetween(Integer value1, Integer value2) {
-            addCriterion("voting between", value1, value2, "voting");
-            return (Criteria) this;
-        }
-
-        public Criteria andVotingNotBetween(Integer value1, Integer value2) {
-            addCriterion("voting not between", value1, value2, "voting");
-            return (Criteria) this;
-        }
-
         public Criteria andVoteTimeIsNull() {
             addCriterion("vote_time is null");
             return (Criteria) this;
