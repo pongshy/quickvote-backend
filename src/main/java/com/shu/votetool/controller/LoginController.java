@@ -45,7 +45,7 @@ public class LoginController {
                             "未接收到code",
                             "/login"
                     ),
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.OK
             );
         }
 
@@ -65,7 +65,7 @@ public class LoginController {
                         "未接受到openid",
                         "/userInfo"
                     ),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.OK);
         }
         return loginService.updateUserInfo(openid, userInfo);
     }

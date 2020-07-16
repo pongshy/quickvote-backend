@@ -98,7 +98,7 @@ public class LoginServiceImpl implements LoginService {
                     e.getMessage(),
                     "/login"
             ),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.OK);
         }
     }
 
@@ -130,7 +130,7 @@ public class LoginServiceImpl implements LoginService {
                                 "数据库中不存在该openid",
                                 "/userInfo"
                         ),
-                        HttpStatus.BAD_REQUEST
+                        HttpStatus.OK
                 );
             }
         } catch (Exception ex) {
@@ -142,7 +142,7 @@ public class LoginServiceImpl implements LoginService {
                             ex.getMessage(),
                             "/userInfo"
                     ),
-                    HttpStatus.INTERNAL_SERVER_ERROR
+                    HttpStatus.OK
             );
         }
     }
