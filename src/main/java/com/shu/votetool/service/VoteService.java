@@ -1,6 +1,7 @@
 package com.shu.votetool.service;
 
 import com.shu.votetool.model.request.NewVoteReq;
+import com.shu.votetool.model.request.UpdateVoteReq;
 import com.shu.votetool.model.request.VoteReq;
 import com.shu.votetool.model.request.VoteSystemListReq;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,15 @@ public interface VoteService {
     * @Date: 2020/7/16
     */
     public ResponseEntity<Object> createVoteSystem(NewVoteReq newVoteReq, String openid);
+
+    /**
+    * @Description: 修改投票
+    * @Param: [newVoteReq, openid]
+    * @return: org.springframework.http.ResponseEntity<java.lang.Object>
+    * @Author: SoCMo
+    * @Date: 2020/7/17
+    */
+    public ResponseEntity<Object> updateVoteSystem(UpdateVoteReq updateVoteReq, String openid);
 
     /**
     * @Description: 获取投票列表，type[0:全部列表, 1:我的列表]

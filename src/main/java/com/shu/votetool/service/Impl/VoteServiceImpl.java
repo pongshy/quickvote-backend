@@ -5,6 +5,7 @@ import com.shu.votetool.exception.AllException;
 import com.shu.votetool.exception.EmAllException;
 import com.shu.votetool.model.entity.*;
 import com.shu.votetool.model.request.NewVoteReq;
+import com.shu.votetool.model.request.UpdateVoteReq;
 import com.shu.votetool.model.request.VoteReq;
 import com.shu.votetool.model.request.VoteSystemListReq;
 import com.shu.votetool.model.response.*;
@@ -12,7 +13,6 @@ import com.shu.votetool.service.VoteService;
 import com.shu.votetool.tool.TimeTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -103,6 +102,90 @@ public class VoteServiceImpl implements VoteService {
     }
 
     /**
+    * @Description: 修改投票项目
+    * @Param: [newVoteReq, openid]
+    * @return: org.springframework.http.ResponseEntity<java.lang.Object>
+    * @Author: SoCMo
+    * @Date: 2020/7/17
+    */
+    @Override
+    @Transactional(rollbackFor = AllException.class)
+    public ResponseEntity<Object> updateVoteSystem(UpdateVoteReq updateVoteReq, String openid) {
+        try{
+            VoteSystemDO voteSystemDO = voteSystemDOMapper.selectByPrimaryKey(updateVoteReq.getId());
+            if(voteSystemDO == null){
+                throw new AllException(EmAllException.BAD_REQUEST, "投票项目不存在");
+            }
+            if(!voteSystemDO.getOpenid().equals(openid)){
+                throw new AllException(EmAllException.IDENTITY_ERROR, "投票项目只能由创建者修改！");
+            }
+
+            Date now = new Date();
+            if(now.after(voteSystemDO.getStartTime())){
+                throw new AllException(EmAllException.BAD_REQUEST, "投票已开始或已结束");
+            }
+
+            //需要更新的对象体
+            VoteSystemDO newVoteSystemDO = new VoteSystemDO();
+            BeanUtils.copyProperties(updateVoteReq, newVoteSystemDO);
+
+
+            //如果需要对开始时间进行修改
+            if(updateVoteReq.getStartTime() != null && !updateVoteReq.getStartTime().isEmpty()){
+                Date startTime = TimeTool.stringToDate(updateVoteReq.getStartTime());
+                if(startTime == null  || startTime.after(voteSystemDO.getEndTime())){
+                    throw new AllException(EmAllException.BAD_REQUEST, "开始时间设置错误");
+                }
+                newVoteSystemDO.setStartTime(startTime);
+            }
+
+            //如果需要对结束时间进行修改
+            if(updateVoteReq.getEndTime() != null && !updateVoteReq.getEndTime().isEmpty()){
+                Date endTime = TimeTool.stringToDate(updateVoteReq.getEndTime());
+                if(endTime == null  || voteSystemDO.getStartTime().after(endTime)){
+                    throw new AllException(EmAllException.BAD_REQUEST, "结束时间设置错误");
+                }
+                newVoteSystemDO.setEndTime(endTime);
+            }
+
+            if(newVoteSystemDO.getStartTime() != null && newVoteSystemDO.getEndTime() != null){
+                if(newVoteSystemDO.getStartTime().after(newVoteSystemDO.getEndTime())){
+                    throw new AllException(EmAllException.BAD_REQUEST, "时间设置错误");
+                }
+            }
+
+
+            if(voteSystemDOMapper.updateByPrimaryKeySelective(newVoteSystemDO) > 0){
+                if(updateVoteReq.getCandidate() != null && !updateVoteReq.getCandidate().isEmpty()){
+                    CandidateDOExample candidateDOExample = new CandidateDOExample();
+                    candidateDOExample.createCriteria().andVoteIdEqualTo(updateVoteReq.getId());
+                    candidateDOMapper.deleteByExample(candidateDOExample);
+
+                    for(String candidate: updateVoteReq.getCandidate()){
+                        CandidateDO candidateDO = new CandidateDO();
+                        candidateDO.setCandidateName(candidate);
+                        candidateDO.setVoteId(updateVoteReq.getId());
+                        if(candidateDOMapper.insertSelective(candidateDO) <= 0){
+                            throw new AllException(EmAllException.DATABASE_ERROR);
+                        }
+                    }
+                }
+
+                return new ResponseEntity<Object>(HttpStatus.OK);
+            }else{
+                throw new AllException(EmAllException.DATABASE_ERROR);
+            }
+        }catch (AllException e) {
+            if(e.getMsg().equals("数据库异常或数据有误")){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
+
+            log.error(e.getMsg());
+            return new ResponseEntity<Object>(new ErrorResult(e, "/voteSystem"), HttpStatus.OK);
+        }
+    }
+
+    /**
     * @Description: 获取投票列表
     * @Param: [type]
     * @return: org.springframework.http.ResponseEntity<java.lang.Object>
@@ -114,30 +197,62 @@ public class VoteServiceImpl implements VoteService {
         try{
             List<VoteSystemDO> voteSystemDOList = null;
             if(voteSystemListReq.getType() == 0){
-                VoterDOExample voterDOExample = new VoterDOExample();
-                voterDOExample.createCriteria().andOpenidEqualTo(openid);
-                voterDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
-                        + ", " + voteSystemListReq.getPerPageNum());
-                List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
-                if(voterDOList == null){
-                    throw new AllException(EmAllException.DATABASE_ERROR);
+                if(voteSystemListReq.getStrRequired().isEmpty()){
+                    VoterDOExample voterDOExample = new VoterDOExample();
+                    voterDOExample.createCriteria().andOpenidEqualTo(openid);
+                    voterDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
+                            + ", " + voteSystemListReq.getPerPageNum());
+                    List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
+                    if(voterDOList == null){
+                        throw new AllException(EmAllException.DATABASE_ERROR);
+                    }
+
+                    if(voterDOList.isEmpty()){
+                        throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
+                    }
+
+                    List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
+                    HashSet<Integer> hashSet = new HashSet<Integer>(voteSystemIdList);
+                    voteSystemIdList.clear();
+                    voteSystemIdList.addAll(hashSet);
+
+                    VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
+                    voteSystemDOExample.createCriteria().andIdIn(voteSystemIdList);
+                    voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
+                }else {
+                    VoterDOExample voterDOExample = new VoterDOExample();
+                    voterDOExample.createCriteria().andOpenidEqualTo(openid);
+                    voterDOExample.setOrderByClause("id DESC");
+                    List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
+                    if(voterDOList == null){
+                        throw new AllException(EmAllException.DATABASE_ERROR);
+                    }
+
+                    if(voterDOList.isEmpty()){
+                        throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
+                    }
+
+                    List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
+                    HashSet<Integer> hashSet = new HashSet<Integer>(voteSystemIdList);
+                    voteSystemIdList.clear();
+                    voteSystemIdList.addAll(hashSet);
+
+                    VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
+                    voteSystemDOExample.createCriteria()
+                            .andIdIn(voteSystemIdList)
+                            .andVoteNameLike("%" + voteSystemListReq.getStrRequired() + "%");
+                    voteSystemDOExample.setOrderByClause("QUERYID ASC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
+                                    +", " + voteSystemListReq.getPerPageNum());
+                    voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
+
                 }
-
-                if(voterDOList.isEmpty()){
-                    throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
-                }
-
-                List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
-                HashSet<Integer> hashSet = new HashSet<Integer>(voteSystemIdList);
-                voteSystemIdList.clear();
-                voteSystemIdList.addAll(hashSet);
-
-                VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
-                voteSystemDOExample.createCriteria().andIdIn(voteSystemIdList);
-                voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
             }else if(voteSystemListReq.getType() == 1){
                 VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
-                voteSystemDOExample.createCriteria().andOpenidEqualTo(openid);
+                VoteSystemDOExample.Criteria criteria = voteSystemDOExample.createCriteria()
+                        .andOpenidEqualTo(openid);
+                if(!voteSystemListReq.getStrRequired().isEmpty()){
+                    criteria.andVoteNameLike("%" + voteSystemListReq.getStrRequired() + "%");
+                }
                 voteSystemDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
                         + ", " + voteSystemListReq.getPerPageNum());
                 voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);

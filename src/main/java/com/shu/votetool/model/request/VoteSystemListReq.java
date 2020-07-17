@@ -3,6 +3,8 @@ package com.shu.votetool.model.request;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * program: VoteSystemListReq
  * description: 获取投票列表请求体
@@ -19,4 +21,7 @@ public class VoteSystemListReq {
 
     @Range(min = 0, message = "每页对象个数错误")
     private int perPageNum;
+
+    @NotNull(message = "筛选信息请求无效")
+    private String strRequired;
 }
