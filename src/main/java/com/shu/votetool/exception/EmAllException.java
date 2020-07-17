@@ -10,11 +10,11 @@ import org.springframework.http.HttpStatus;
 public enum EmAllException implements CommonError {
     BAD_REQUEST(400, "请求参数格式有误", HttpStatus.BAD_REQUEST),
 
+    IDENTITY_ERROR(401, "未经权限", HttpStatus.UNAUTHORIZED),
+
     DATABASE_ERROR(500, "数据库异常或数据有误", HttpStatus.INTERNAL_SERVER_ERROR);
 
 //    NO_LOGIN_AUTHORIZATION(403, "没有登录权限"),
-//
-//    IDENTITY_ERROR(403, "没有权限"),
 //
 //    LOGIN_VERIFICATION_ERROR(500, "上海大学登录接口出现异常"),
 //

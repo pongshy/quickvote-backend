@@ -9,10 +9,6 @@ public class CandidateDO {
 
     private Integer agree;
 
-    private Integer against;
-
-    private Integer abstain;
-
     public Integer getId() {
         return id;
     }
@@ -43,21 +39,5 @@ public class CandidateDO {
 
     public void setAgree(Integer agree) {
         this.agree = agree;
-    }
-
-    public Integer getAgainst() {
-        return against;
-    }
-
-    public void setAgainst(Integer against) {
-        this.against = against;
-    }
-
-    public Integer getAbstain() {
-        return abstain;
-    }
-
-    public void setAbstain(Integer abstain) {
-        this.abstain = abstain;
     }
 }

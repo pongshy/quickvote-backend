@@ -26,17 +26,11 @@ public class LoginController {
     @GetMapping("/test")
     public ResponseEntity<Object> testApi(@RequestParam("value") String value) {
 
-        return new ResponseEntity<Object>(new ErrorResult(
+        return new ResponseEntity<Object>(new ErrorResult(404,
                 HttpStatus.BAD_REQUEST,
-                "测试",
-                "/test"
-        ),
+                "测试接口",
+                "/login/test"),
                 HttpStatus.OK);
-//        return new ResponseEntity<Object>(new ErrorResult(404,
-//                HttpStatus.BAD_REQUEST,
-//                "测试接口",
-//                "/login/test"),
-//                HttpStatus.OK);
 //        return ResponseEntity.ok(value);
     }
 

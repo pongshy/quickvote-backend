@@ -11,8 +11,6 @@ public class VoteRecordDO {
 
     private Integer candidateId;
 
-    private Integer voting;
-
     private Date voteTime;
 
     public Integer getId() {
@@ -45,14 +43,6 @@ public class VoteRecordDO {
 
     public void setCandidateId(Integer candidateId) {
         this.candidateId = candidateId;
-    }
-
-    public Integer getVoting() {
-        return voting;
-    }
-
-    public void setVoting(Integer voting) {
-        this.voting = voting;
     }
 
     public Date getVoteTime() {
