@@ -27,12 +27,15 @@ public class LoginController {
     @ApiOperation(value = "测试接口", httpMethod = "GET")
     @GetMapping("/test")
     public ResponseEntity<String> testApi(@RequestParam("value") String value) {
-
-//        return new ResponseEntity<Object>(new ErrorResult(404,
-//                HttpStatus.BAD_REQUEST,
-//                "测试接口",
-//                "/login/test"),
-//                HttpStatus.OK);
+        if (StringUtils.isEmpty(value)) {
+            return ResponseEntity.ok("value为空");
+//            return new ResponseEntity<Object>(
+//                    new ErrorResult(
+//                            new AllException(EmAllException.BAD_REQUEST, "value为空"), "/test"
+//                    ),
+//                    HttpStatus.OK
+//            )
+        }
         return ResponseEntity.ok(value);
     }
 
