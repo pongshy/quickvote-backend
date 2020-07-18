@@ -27,7 +27,7 @@ public class TimeTool {
     }
 
     /**
-     * @Description: date转换为最小为分的格式
+     * @Description: date转换为最小为秒的格式
      * @Param: [date]
      * @Return: java.lang.String
      * @Author: SoCMo
@@ -35,6 +35,20 @@ public class TimeTool {
      */
     public static String timeToSecond(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        //设置时区为Asia/Shanghai
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        return simpleDateFormat.format(date);
+    }
+
+    /**
+     * @Description: date转换为最小为秒的格式，微信解析使用
+     * @Param: [date]
+     * @Return: java.lang.String
+     * @Author: SoCMo
+     * @Date: 2019/12/6
+     */
+    public static String timeToSecondWX(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         //设置时区为Asia/Shanghai
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         return simpleDateFormat.format(date);
