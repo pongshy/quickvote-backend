@@ -328,7 +328,9 @@ public class VoteServiceImpl implements VoteService {
             BeanUtils.copyProperties(voteSystemDO, voteDetailRes);
             voteDetailRes.setStartTime(TimeTool.timeToSecond(voteSystemDO.getStartTime()));
             voteDetailRes.setEndTime(TimeTool.timeToSecond(voteSystemDO.getEndTime()));
+            voteDetailRes.setEndTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getEndTime()));
             voteDetailRes.setCreateTime(TimeTool.timeToSecond(voteSystemDO.getCreateTime()));
+
 
             CandidateDOExample candidateDOExample = new CandidateDOExample();
             candidateDOExample.createCriteria().andVoteIdEqualTo(id);

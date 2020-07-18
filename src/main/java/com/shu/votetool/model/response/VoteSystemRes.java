@@ -2,9 +2,6 @@ package com.shu.votetool.model.response;
 
 import lombok.Data;
 
-import java.util.Date;
-import java.util.List;
-
 /**
  * program: VoteSystemRes
  * description: 投票信息返回
@@ -24,6 +21,8 @@ public class VoteSystemRes {
     private String startTime;
 
     private String endTime;
+
+    private String endTimeFormat;
 
     private String createTime;
 

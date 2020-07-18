@@ -5,6 +5,7 @@ import com.shu.votetool.model.request.UpdateVoteReq;
 import com.shu.votetool.model.request.VoteReq;
 import com.shu.votetool.model.request.VoteSystemListReq;
 import com.shu.votetool.service.VoteService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class VoteController {
      * @Author: SoCMo
      * @Date: 2020/7/16
      */
+    @ApiOperation(value = "创建投票项目", httpMethod = "POST")
     @PostMapping("/voteSystem")
     public ResponseEntity<Object> newVoteSystem(@Validated @RequestBody NewVoteReq newVoteReq,
                                                 @RequestHeader("openid") String openid) {
@@ -44,6 +46,7 @@ public class VoteController {
      * @Author: SoCMo
      * @Date: 2020/7/17
      */
+    @ApiOperation(value = "更新投票项目", httpMethod = "PUT")
     @PutMapping("/voteSystem")
     public ResponseEntity<Object> updateVoteSystem(@Validated @RequestBody UpdateVoteReq updateVoteReq,
                                                    @RequestHeader("openid") String openid) {
@@ -57,6 +60,7 @@ public class VoteController {
      * @Author: SoCMo
      * @Date: 2020/7/16
      */
+    @ApiOperation(value = "获取投票列表", httpMethod = "GET")
     @GetMapping("/voteSystemList")
     public ResponseEntity<Object> voteSystemList(@Validated VoteSystemListReq voteSystemListReq,
                                                  @RequestHeader("openid") String openid){
@@ -70,6 +74,7 @@ public class VoteController {
     * @Author: SoCMo
     * @Date: 2020/7/16
     */
+    @ApiOperation(value = "投票", httpMethod = "POST")
     @PostMapping("/voteRecord")
     public ResponseEntity<Object> vote(@Validated @RequestBody VoteReq voteReq,
                                                  @RequestHeader("openid") String openid){
@@ -82,7 +87,8 @@ public class VoteController {
     * @return: org.springframework.http.ResponseEntity<java.lang.Object> 
     * @Author: SoCMo
     * @Date: 2020/7/16 
-    */ 
+    */
+    @ApiOperation(value = "获取投票详情", httpMethod = "GET")
     @GetMapping("/voteDetail")
     public ResponseEntity<Object> voteDetail(@RequestParam Integer id){
         return voteService.voteSystemDetail(id);
