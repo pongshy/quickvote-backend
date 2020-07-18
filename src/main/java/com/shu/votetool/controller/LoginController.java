@@ -26,6 +26,7 @@ public class LoginController {
     @GetMapping("/test")
     public ResponseEntity<String> testApi(@RequestParam("value") String value) {
 
+        
 //        return new ResponseEntity<Object>(new ErrorResult(404,
 //                HttpStatus.BAD_REQUEST,
 //                "测试接口",
