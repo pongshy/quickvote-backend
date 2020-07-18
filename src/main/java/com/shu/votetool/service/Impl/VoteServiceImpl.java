@@ -68,7 +68,7 @@ public class VoteServiceImpl implements VoteService {
             }
 
             Date now = new Date();
-            if(!now.before(startTime) || !startTime.before(endTime)){
+            if(!startTime.before(endTime)){
                 throw new AllException(EmAllException.BAD_REQUEST);
             }
 
