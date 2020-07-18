@@ -29,12 +29,6 @@ public class LoginController {
     public ResponseEntity<String> testApi(@RequestParam("value") String value) {
         if (StringUtils.isEmpty(value)) {
             return ResponseEntity.ok("value为空");
-//            return new ResponseEntity<Object>(
-//                    new ErrorResult(
-//                            new AllException(EmAllException.BAD_REQUEST, "value为空"), "/test"
-//                    ),
-//                    HttpStatus.OK
-//            )
         }
         return ResponseEntity.ok(value);
     }
