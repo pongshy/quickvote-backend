@@ -15,4 +15,6 @@ public class CandidateVO {
     private String candidateName;
 
     private Integer agree;
+
+    private String percentage;
 }

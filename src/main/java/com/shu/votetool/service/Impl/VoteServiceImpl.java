@@ -10,6 +10,7 @@ import com.shu.votetool.model.request.VoteReq;
 import com.shu.votetool.model.request.VoteSystemListReq;
 import com.shu.votetool.model.response.*;
 import com.shu.votetool.service.VoteService;
+import com.shu.votetool.tool.NumberTool;
 import com.shu.votetool.tool.TimeTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -335,9 +336,12 @@ public class VoteServiceImpl implements VoteService {
             if(candidateDOList == null){
                 throw new AllException(EmAllException.DATABASE_ERROR);
             }
+
+            voteDetailRes.setReceivedVote(candidateDOList.stream().mapToInt(CandidateDO::getAgree).sum());
             voteDetailRes.setCandidateList(candidateDOList.stream().map(candidateDO -> {
                 CandidateVO candidateVO = new CandidateVO();
                 BeanUtils.copyProperties(candidateDO, candidateVO);
+                candidateVO.setPercentage(NumberTool.doubleToStringWithH(NumberTool.intDivision(candidateDO.getAgree(), voteDetailRes.getReceivedVote())));
                 return candidateVO;
             }).collect(Collectors.toList()));
 
@@ -360,7 +364,6 @@ public class VoteServiceImpl implements VoteService {
                 throw new AllException(EmAllException.DATABASE_ERROR);
             }
 
-            voteDetailRes.setReceivedVote(voteDetailRes.getVoteRecordVOList().size());
             voteDetailRes.setCandidateNum(voteDetailRes.getCandidateList().size());
             voteDetailRes.setHeadImg(userDO.getWimage());
             voteDetailRes.setWxName(userDO.getWname());
