@@ -30,4 +30,10 @@ public class VoteSystemRes {
     private Integer ispublic;
 
     private String openid;
+
+    private String headImg;
+
+    private Integer candidateNum;
+
+    private Integer receivedVote;
 }
