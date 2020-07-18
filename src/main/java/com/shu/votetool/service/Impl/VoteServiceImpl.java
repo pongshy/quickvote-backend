@@ -23,6 +23,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -261,10 +262,24 @@ public class VoteServiceImpl implements VoteService {
             }
 
             if(voteSystemDOList == null){
-                throw new AllException(EmAllException.DATABASE_ERROR);
+                throw new AllException(EmAllException.DATABASE_ERROR, "您未参与过已知的投票项目!");
             }
 
-            List<Integer> voteIdList = voteSystemDOList.stream().map(VoteSystemDO::getId).collect(Collectors.toList());
+            List<String> openIdList = voteSystemDOList.stream().map(VoteSystemDO::getOpenid).collect(Collectors.toList());
+            UserDOExample userDOExample = new UserDOExample();
+            userDOExample.createCriteria().andOpenidIn(openIdList);
+            List<UserDO> userDOList = userDOMapper.selectByExample(userDOExample);
+            if(userDOList == null || userDOList.isEmpty()){
+                throw new AllException(EmAllException.DATABASE_ERROR);
+            }
+            Map<String, UserDO> userDOMap = userDOList.stream().collect(Collectors.toMap(UserDO::getOpenid, userDO -> userDO, (k1, k2) -> k1));
+
+            CandidateDOExample candidateDOExample = new CandidateDOExample();
+            candidateDOExample.createCriteria().andVoteIdIn(voteSystemDOList.stream().map(VoteSystemDO::getId).collect(Collectors.toList()));
+            List<CandidateDO> candidateDOList = candidateDOMapper.selectByExample(candidateDOExample);
+            if(candidateDOList == null){
+                throw new AllException(EmAllException.DATABASE_ERROR);
+            }
 
             //获取所有投票的投票对象列表
             VoteSystemList voteSystemList = new VoteSystemList();
@@ -275,6 +290,11 @@ public class VoteServiceImpl implements VoteService {
                 voteSystemRes.setStartTime(TimeTool.timeToSecond(voteSystemDO.getStartTime()));
                 voteSystemRes.setEndTime(TimeTool.timeToSecond(voteSystemDO.getEndTime()));
                 voteSystemRes.setCreateTime(TimeTool.timeToSecond(voteSystemDO.getCreateTime()));
+                voteSystemRes.setHeadImg(userDOMap.get(voteSystemDO.getOpenid()).getWimage());
+                List<CandidateDO> CandidateListNeed = candidateDOList.stream().filter(candidateDO -> candidateDO.getVoteId().equals(voteSystemDO.getId())).collect(Collectors.toList());
+
+                voteSystemRes.setCandidateNum(CandidateListNeed.size());
+                voteSystemRes.setReceivedVote(CandidateListNeed.stream().mapToInt(CandidateDO::getAgree).sum());
                 return voteSystemRes;
             }).collect(Collectors.toList()));
 
@@ -335,6 +355,15 @@ public class VoteServiceImpl implements VoteService {
                 return voteRecordVO;
             }).collect(Collectors.toList()));
 
+            UserDO userDO = userDOMapper.selectByPrimaryKey(voteDetailRes.getOpenid());
+            if(userDO == null){
+                throw new AllException(EmAllException.DATABASE_ERROR);
+            }
+
+            voteDetailRes.setReceivedVote(voteDetailRes.getVoteRecordVOList().size());
+            voteDetailRes.setCandidateNum(voteDetailRes.getCandidateList().size());
+            voteDetailRes.setHeadImg(userDO.getWimage());
+            voteDetailRes.setWxName(userDO.getWname());
             return new ResponseEntity<Object>(voteDetailRes, HttpStatus.OK);
         }catch (AllException e) {
             log.error(e.getMsg());
@@ -384,9 +413,11 @@ public class VoteServiceImpl implements VoteService {
 
             CandidateDOExample candidateDOExample = new CandidateDOExample();
             candidateDOExample.createCriteria().andIdIn(voteReq.getCandidateIdList());
-            if(candidateDOMapper.countByExample(candidateDOExample) != voteReq.getCandidateIdList().size()){
+            List<CandidateDO> candidateDOList = candidateDOMapper.selectByExample(candidateDOExample);
+            if(candidateDOList == null || candidateDOList.size() != voteReq.getCandidateIdList().size()){
                 throw new AllException(EmAllException.BAD_REQUEST, "您选择的选项ID不存在！");
             }
+            Map<Integer, CandidateDO> candidateDOMap = candidateDOList.stream().collect(Collectors.toMap(CandidateDO::getId, candidateDO -> candidateDO, (k1, k2) -> k1));
 
             for(Integer candidateId: voteReq.getCandidateIdList()){
                 VoteRecordDO voteRecordDO = new VoteRecordDO();
@@ -397,6 +428,11 @@ public class VoteServiceImpl implements VoteService {
 
                 if(voteRecordDOMapper.insertSelective(voteRecordDO) < 0){
                     throw new AllException(EmAllException.DATABASE_ERROR);
+                }else {
+                    CandidateDO candidateDO = new CandidateDO();
+                    candidateDO.setAgree(candidateDOMap.get(candidateId).getAgree() + 1);
+                    candidateDO.setId(candidateId);
+                    candidateDOMapper.updateByPrimaryKeySelective(candidateDO);
                 }
             }
             return new ResponseEntity<Object>(HttpStatus.OK);
