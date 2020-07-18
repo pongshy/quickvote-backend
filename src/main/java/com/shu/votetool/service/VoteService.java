@@ -1,5 +1,6 @@
 package com.shu.votetool.service;
 
+import com.shu.votetool.exception.AllException;
 import com.shu.votetool.model.request.NewVoteReq;
 import com.shu.votetool.model.request.UpdateVoteReq;
 import com.shu.votetool.model.request.VoteReq;
@@ -59,4 +60,13 @@ public interface VoteService {
     * @Date: 2020/7/16 
     */ 
     public ResponseEntity<Object> vote(VoteReq voteReq, String openid);
+
+    /*
+     * @Description: 获取用户参与的投票项目数与发起的投票项目数
+     * @Param: [openid]
+     * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+     * @Author: pongshy
+     * @Date: 2020/7/18
+     **/
+    public ResponseEntity<Object> getUserVoteNum(String openid);
 }

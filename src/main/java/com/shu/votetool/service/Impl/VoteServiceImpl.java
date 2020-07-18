@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -448,6 +449,38 @@ public class VoteServiceImpl implements VoteService {
 
             log.error(e.getMsg());
             return new ResponseEntity<Object>(new ErrorResult(e, "/voteRecord"), HttpStatus.OK);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Object> getUserVoteNum(String openid) {
+        try {
+            if (StringUtils.isEmpty(openid)) {
+                throw new AllException(EmAllException.BAD_REQUEST, "openid为空");
+            }
+            UserDO userDO = userDOMapper.selectByPrimaryKey(openid);
+
+            if (userDO != null) {
+                VoteSystemNumVO response = new VoteSystemNumVO();
+
+                List<Integer> idList = voteSystemDOMapper.selectVoteSystemIdByOpenid(openid);
+                response.setVoteCreatedNum(idList.size());
+
+                VoterDOExample voterDOExample = new VoterDOExample();
+                voterDOExample.createCriteria()
+                        .andVoteIdNotIn(idList)
+                        .andOpenidEqualTo(openid);
+                int count = voterDOMapper.countByExample(voterDOExample);
+                response.setVotingNum(count);
+
+                return new ResponseEntity<Object>(response, HttpStatus.OK);
+            } else {
+                throw new AllException(EmAllException.BAD_REQUEST, "openid不存在");
+            }
+        } catch (AllException ex) {
+            log.info(ex.getMsg());
+
+            return new ResponseEntity<>(new ErrorResult(ex, "/vote/voteSystemNum"), HttpStatus.OK);
         }
     }
 }

@@ -93,4 +93,17 @@ public class VoteController {
     public ResponseEntity<Object> voteDetail(@RequestParam Integer id){
         return voteService.voteSystemDetail(id);
     }
+
+    /*
+      * @Description: 获取用户参与的投票项目数与发起的投票项目数
+      * @Param: [openid]
+      * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+      * @Author: pongshy
+      * @Date: 2020/7/18
+     **/
+    @ApiOperation(value = "获取用户参与的投票项目数与发起的投票项目数", httpMethod = "GET")
+    @GetMapping("/voteSystemNum")
+    public ResponseEntity<Object> voteNum(@RequestHeader("openid") String openid) {
+        return voteService.getUserVoteNum(openid);
+    }
 }

@@ -27,4 +27,6 @@ public interface VoteSystemDOMapper {
     int updateByPrimaryKeySelective(VoteSystemDO record);
 
     int updateByPrimaryKey(VoteSystemDO record);
+
+    List<Integer> selectVoteSystemIdByOpenid(String openid);
 }

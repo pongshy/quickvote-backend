@@ -274,4 +274,7 @@
       openid = #{openid,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectVoteSystemIdByOpenid" parameterType="java.lang.String" resultType="integer">
+    select id from votesystem where openid = #{openid,jdbcType=VARCHAR}
+  </select>
 </mapper>

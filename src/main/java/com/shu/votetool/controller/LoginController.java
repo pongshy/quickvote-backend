@@ -30,7 +30,7 @@ public class LoginController {
         if (StringUtils.isEmpty(value)) {
             return ResponseEntity.ok("value为空");
         }
-        
+
         return ResponseEntity.ok(value);
     }
 
