@@ -1,5 +1,6 @@
 package com.shu.votetool.service;
 
+import com.shu.votetool.exception.AllException;
 import com.shu.votetool.model.request.UserInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public interface LoginService {
       * @Author: pongshy
       * @Date: 2020/7/16
      **/
-    public ResponseEntity<Object> loginWX(String code) throws Exception;
+    public ResponseEntity<Object> loginWX(String code) throws AllException;
 
     /*
       * @Description: 用户信息插入接口
@@ -26,5 +27,5 @@ public interface LoginService {
       * @Author: pongshy
       * @Date: 2020/7/16
      **/
-    public ResponseEntity<Object> updateUserInfo(String openid, UserInfo userInfo) throws Exception;
+    public ResponseEntity<Object> updateUserInfo(String openid, UserInfo userInfo) throws AllException;
 }

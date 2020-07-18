@@ -12,7 +12,13 @@ public enum EmAllException implements CommonError {
 
     IDENTITY_ERROR(401, "未经权限", HttpStatus.UNAUTHORIZED),
 
-    DATABASE_ERROR(500, "数据库异常或数据有误", HttpStatus.INTERNAL_SERVER_ERROR);
+    DATABASE_ERROR(500, "数据库异常或数据有误", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    ErrorCode(400, " wx.login接口返回", HttpStatus.BAD_REQUEST),
+
+    INTERNAL_ERROR(500, "程序内部错误", HttpStatus.INTERNAL_SERVER_ERROR);
+
+
 
 //    NO_LOGIN_AUTHORIZATION(403, "没有登录权限"),
 //

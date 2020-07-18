@@ -1,5 +1,7 @@
 package com.shu.votetool.controller;
 
+import com.shu.votetool.exception.AllException;
+import com.shu.votetool.exception.EmAllException;
 import com.shu.votetool.model.Result;
 import com.shu.votetool.model.request.UserInfo;
 import com.shu.votetool.model.response.ErrorResult;
@@ -26,7 +28,6 @@ public class LoginController {
     @GetMapping("/test")
     public ResponseEntity<String> testApi(@RequestParam("value") String value) {
 
-        
 //        return new ResponseEntity<Object>(new ErrorResult(404,
 //                HttpStatus.BAD_REQUEST,
 //                "测试接口",
@@ -39,12 +40,9 @@ public class LoginController {
     @GetMapping("/login")
     public ResponseEntity<Object> login(@RequestParam(value = "code", defaultValue = "1") String code) throws Exception {
         if (code.equals("1")) {
-            return new ResponseEntity<Object>(
+            return new ResponseEntity<>(
                     new ErrorResult(
-                            400,
-                            HttpStatus.BAD_REQUEST,
-                            "未接收到code",
-                            "/login"
+                           new AllException(EmAllException.BAD_REQUEST, "code为空"), "login"
                     ),
                     HttpStatus.OK
             );
@@ -59,12 +57,9 @@ public class LoginController {
         String openid = request.getHeader("openid");
 
         if (StringUtils.isEmpty(openid)) {
-            return new ResponseEntity<Object>(
+            return new ResponseEntity<>(
                     new ErrorResult(
-                        400,
-                        HttpStatus.BAD_REQUEST,
-                        "未接受到openid",
-                        "/userInfo"
+                            new AllException(EmAllException.BAD_REQUEST, "openid为空或无openid"), "/userInfo"
                     ),
                     HttpStatus.OK);
         }
