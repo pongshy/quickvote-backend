@@ -22,10 +22,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -481,6 +478,39 @@ public class VoteServiceImpl implements VoteService {
             log.info(ex.getMsg());
 
             return new ResponseEntity<>(new ErrorResult(ex, "/vote/voteSystemNum"), HttpStatus.OK);
+        }
+    }
+
+    @Override
+    public ResponseEntity<Object> getUninvestedPersons(Integer id) {
+        try {
+            if (id < 0) {
+                throw new AllException(EmAllException.BAD_REQUEST, "id为空");
+            }
+            List<String> openid_list = voterDOMapper.selectUnvoteBy(id);
+            UnVotePersonsVO unVotePersonsVO = new UnVotePersonsVO();
+
+            if (openid_list == null || openid_list.isEmpty()) {
+                return new ResponseEntity<>(unVotePersonsVO, HttpStatus.OK);
+            } else {
+                UserDOExample userDOExample = new UserDOExample();
+
+                userDOExample.createCriteria()
+                        .andOpenidIn(openid_list);
+                List<UserDO> userDOList = userDOMapper.selectByExample(userDOExample);
+
+                List<String> wname = new ArrayList<>();
+                for (UserDO userDO : userDOList) {
+                    wname.add(userDO.getWname());
+                }
+                unVotePersonsVO.setWxnameList(wname);
+
+                return new ResponseEntity<>(unVotePersonsVO, HttpStatus.OK);
+            }
+        }
+        catch (AllException ex) {
+            log.info(ex.getMsg());
+            return new ResponseEntity<>(new ErrorResult(ex, "/vote/uninvested"), HttpStatus.OK);
         }
     }
 }

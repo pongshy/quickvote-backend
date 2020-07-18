@@ -5,6 +5,7 @@ import com.shu.votetool.model.request.UpdateVoteReq;
 import com.shu.votetool.model.request.VoteReq;
 import com.shu.votetool.model.request.VoteSystemListReq;
 import com.shu.votetool.service.VoteService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -105,5 +106,18 @@ public class VoteController {
     @GetMapping("/voteSystemNum")
     public ResponseEntity<Object> voteNum(@RequestHeader("openid") String openid) {
         return voteService.getUserVoteNum(openid);
+    }
+
+    /*
+      * @Description: 获取未投人员名单
+      * @Param: [Integer]
+      * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+      * @Author: pongshy
+      * @Date: 2020/7/18
+     **/
+    @ApiOperation(value = "获取未投人员名单", httpMethod = "GET")
+    @GetMapping("/uninvested")
+    public ResponseEntity<Object> getUninvested(@RequestParam(value = "id", defaultValue = "-1") Integer id) {
+        return voteService.getUninvestedPersons(id);
     }
 }

@@ -69,4 +69,13 @@ public interface VoteService {
      * @Date: 2020/7/18
      **/
     public ResponseEntity<Object> getUserVoteNum(String openid);
+
+    /*
+     * @Description: 获取未投人员名单
+     * @Param: [Integer]
+     * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+     * @Author: pongshy
+     * @Date: 2020/7/18
+     **/
+    public ResponseEntity<Object> getUninvestedPersons(Integer id);
 }

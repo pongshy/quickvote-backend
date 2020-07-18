@@ -179,4 +179,10 @@
       wimage = #{wimage,jdbcType=VARCHAR}
     where openid = #{openid,jdbcType=VARCHAR}
   </update>
+<!--  <select id="selectWNameByOpenid" resultType="java.lang.String" parameterType="arraylist">-->
+<!--    select wname from `user` where openid in-->
+<!--    <foreach item="item" collection="listTag" index="index"  open="(" separator="," close=")">-->
+<!--        #{item}-->
+<!--    </foreach>-->
+<!--  </select>-->
 </mapper>
