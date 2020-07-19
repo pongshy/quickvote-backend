@@ -12,6 +12,8 @@ import java.util.List;
  **/
 @Data
 public class UnVotePersonsVO {
+    private String openid;
+
     private String wname;
 
     private String wimage;

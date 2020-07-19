@@ -504,6 +504,7 @@ public class VoteServiceImpl implements VoteService {
 
                     unVotePersonsVO.setWimage(userDO.getWimage());
                     unVotePersonsVO.setWname(userDO.getWname());
+                    unVotePersonsVO.setOpenid(userDO.getOpenid());
 
                     voList.add(unVotePersonsVO);
                 }
