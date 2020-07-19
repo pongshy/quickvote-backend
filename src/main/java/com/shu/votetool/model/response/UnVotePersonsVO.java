@@ -12,9 +12,7 @@ import java.util.List;
  **/
 @Data
 public class UnVotePersonsVO {
-    private List<String> wxnameList;
+    private String wname;
 
-    public UnVotePersonsVO() {
-        this.wxnameList = new ArrayList<>();
-    }
+    private String wimage;
 }

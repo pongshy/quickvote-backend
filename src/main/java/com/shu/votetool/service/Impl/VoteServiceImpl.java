@@ -488,10 +488,10 @@ public class VoteServiceImpl implements VoteService {
                 throw new AllException(EmAllException.BAD_REQUEST, "id为空");
             }
             List<String> openid_list = voterDOMapper.selectUnvoteBy(id);
-            UnVotePersonsVO unVotePersonsVO = new UnVotePersonsVO();
+            List<UnVotePersonsVO> voList = new ArrayList<>();
 
             if (openid_list == null || openid_list.isEmpty()) {
-                return new ResponseEntity<>(unVotePersonsVO, HttpStatus.OK);
+                return new ResponseEntity<>(voList, HttpStatus.OK);
             } else {
                 UserDOExample userDOExample = new UserDOExample();
 
@@ -499,13 +499,16 @@ public class VoteServiceImpl implements VoteService {
                         .andOpenidIn(openid_list);
                 List<UserDO> userDOList = userDOMapper.selectByExample(userDOExample);
 
-                List<String> wname = new ArrayList<>();
                 for (UserDO userDO : userDOList) {
-                    wname.add(userDO.getWname());
-                }
-                unVotePersonsVO.setWxnameList(wname);
+                    UnVotePersonsVO unVotePersonsVO = new UnVotePersonsVO();
 
-                return new ResponseEntity<>(unVotePersonsVO, HttpStatus.OK);
+                    unVotePersonsVO.setWimage(userDO.getWimage());
+                    unVotePersonsVO.setWname(userDO.getWname());
+
+                    voList.add(unVotePersonsVO);
+                }
+
+                return new ResponseEntity<>(voList, HttpStatus.OK);
             }
         }
         catch (AllException ex) {
