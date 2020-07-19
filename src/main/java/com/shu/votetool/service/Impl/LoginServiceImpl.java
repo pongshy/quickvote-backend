@@ -164,7 +164,7 @@ public class LoginServiceImpl implements LoginService {
 
             return new ResponseEntity<>(access_token, HttpStatus.OK);
         } catch (AllException ex) {
-            log.info(ex.getMessage());
+            log.info(ex.getMsg());
             return new ResponseEntity<>(new ErrorResult(ex, "/access_token"), HttpStatus.OK);
         } catch (IOException e) {
             log.info(e.getMessage());

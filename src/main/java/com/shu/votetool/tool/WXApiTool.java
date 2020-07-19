@@ -34,7 +34,7 @@ public class WXApiTool {
             String url = "https://api.weixin.qq.com/cgi-bin/token?" +
                     "grant_type=client_credential" +
                     "&appid=" + AppId +
-                    "&&secret=" + secret;
+                    "&secret=" + secret;
             log.info(url);
             CloseableHttpClient httpClient = HttpClients.createDefault();
             //请求
@@ -58,6 +58,8 @@ public class WXApiTool {
                 throw new AllException(EmAllException.INTERNAL_ERROR, "请确保 grant_type 字段值为 client_credential");
             } else if (errcode.equals("40013")) {
                 throw new AllException(EmAllException.BAD_REQUEST, "不合法的 AppID，请开发者检查 AppID 的正确性，避免异常字符，注意大小写");
+            } else if (errcode.equals("40125")) {
+                throw new AllException(EmAllException.BAD_REQUEST, "invalid appsecret");
             } else {
                 throw new AllException(EmAllException.BAD_REQUEST, "文档中未标明错误");
             }
