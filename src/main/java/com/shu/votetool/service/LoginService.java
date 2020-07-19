@@ -28,4 +28,12 @@ public interface LoginService {
       * @Date: 2020/7/16
      **/
     public ResponseEntity<Object> updateUserInfo(String openid, UserInfo userInfo) throws AllException;
+
+    /*
+      * @Description: 获取小程序全局唯一后台接口调用凭据（access_token）
+      * @Return: org.springframework.http.ResponseEntity
+      * @Author: pongshy
+      * @Date: 2020/7/16
+     **/
+    public ResponseEntity<Object> getAccessToken() throws AllException;
 }

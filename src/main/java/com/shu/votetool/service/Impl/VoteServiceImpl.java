@@ -449,6 +449,13 @@ public class VoteServiceImpl implements VoteService {
         }
     }
 
+    /*
+     * @Description: 获取用户参与的投票项目数与发起的投票项目数
+     * @Param: [openid]
+     * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+     * @Author: pongshy
+     * @Date: 2020/7/18
+     **/
     @Override
     public ResponseEntity<Object> getUserVoteNum(String openid) {
         try {
@@ -481,6 +488,13 @@ public class VoteServiceImpl implements VoteService {
         }
     }
 
+    /*
+     * @Description: 获取未投人员名单
+     * @Param: [Integer]
+     * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+     * @Author: pongshy
+     * @Date: 2020/7/18
+     **/
     @Override
     public ResponseEntity<Object> getUninvestedPersons(Integer id) {
         try {
