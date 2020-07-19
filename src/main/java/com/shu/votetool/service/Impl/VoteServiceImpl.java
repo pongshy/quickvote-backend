@@ -483,4 +483,36 @@ public class VoteServiceImpl implements VoteService {
             return new ResponseEntity<>(new ErrorResult(ex, "/vote/voteSystemNum"), HttpStatus.OK);
         }
     }
+
+    /**
+    * @Description: 增加投票员
+    * @Param: [id, openid]
+    * @return: org.springframework.http.ResponseEntity<java.lang.Object>
+    * @Author: SoCMo
+    * @Date: 2020/7/19
+    */
+    @Override
+    public ResponseEntity<Object> addVoter(int voteId, String openid) {
+        try {
+            VoteSystemDO voteSystemDO = voteSystemDOMapper.selectByPrimaryKey(voteId);
+            if(voteSystemDO == null){
+                throw new AllException(EmAllException.BAD_REQUEST, "该投票不存在!");
+            }
+
+            VoterDOExample voterDOExample = new VoterDOExample();
+            voterDOExample.createCriteria()
+                    .andVoteIdEqualTo(voteId)
+                    .andOpenidEqualTo(openid);
+            if(voterDOMapper.countByExample(voterDOExample) == 0){
+                VoterDO voterDO = new VoterDO();
+                voterDO.setOpenid(openid);
+                voterDO.setVoteId(voteId);
+                voterDOMapper.insertSelective(voterDO);
+            }
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (AllException ex) {
+            log.info(ex.getMsg());
+            return new ResponseEntity<>(new ErrorResult(ex, "/vote/voteSystemNum"), HttpStatus.OK);
+        }
+    }
 }

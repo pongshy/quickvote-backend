@@ -1,16 +1,15 @@
 package com.shu.votetool.controller;
 
-import com.shu.votetool.model.request.NewVoteReq;
-import com.shu.votetool.model.request.UpdateVoteReq;
-import com.shu.votetool.model.request.VoteReq;
-import com.shu.votetool.model.request.VoteSystemListReq;
+import com.shu.votetool.model.request.*;
 import com.shu.votetool.service.VoteService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * program: VoteSystemController
@@ -105,5 +104,18 @@ public class VoteController {
     @GetMapping("/voteSystemNum")
     public ResponseEntity<Object> voteNum(@RequestHeader("openid") String openid) {
         return voteService.getUserVoteNum(openid);
+    }
+
+    /**
+    * @Description: 增加投票员
+    * @Param: [voteId, openid]
+    * @return: org.springframework.http.ResponseEntity<java.lang.Object>
+    * @Author: SoCMo
+    * @Date: 2020/7/19
+    */
+    @ApiOperation(value = "增加投票员", httpMethod = "Post")
+    @PostMapping("/voter")
+    public ResponseEntity<Object> addVoter(@RequestBody NewVoterReq newVoterReq, @RequestHeader("openid") String openid){
+        return voteService.addVoter(newVoterReq.getVoteId(), openid);
     }
 }
