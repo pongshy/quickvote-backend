@@ -8,6 +8,7 @@ import com.shu.votetool.model.entity.UserDO;
 import com.shu.votetool.model.request.UserInfo;
 import com.shu.votetool.model.response.ErrorResult;
 import com.shu.votetool.service.LoginService;
+import com.shu.votetool.tool.WXApiTool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -17,6 +18,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -146,6 +148,33 @@ public class LoginServiceImpl implements LoginService {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
             return new ResponseEntity<>(new ErrorResult(ex, "/userInfo"), HttpStatus.OK);
+        }
+    }
+
+    /*
+     * @Description: 获取小程序全局唯一后台接口调用凭据（access_token）
+     * @Return: org.springframework.http.ResponseEntity
+     * @Author: pongshy
+     * @Date: 2020/7/16
+     **/
+    @Override
+    public ResponseEntity<Object> getAccessToken() throws AllException {
+        try {
+            String access_token = WXApiTool.getAccessToken(AppId, secret);
+
+            return new ResponseEntity<>(access_token, HttpStatus.OK);
+        } catch (AllException ex) {
+            log.info(ex.getMsg());
+            return new ResponseEntity<>(new ErrorResult(ex, "/access_token"), HttpStatus.OK);
+        } catch (IOException e) {
+            log.info(e.getMessage());
+            return new ResponseEntity<>(
+                    new ErrorResult(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                            "后端调用Api失败",
+                            "/access_token"
+            ),
+                    HttpStatus.OK);
         }
     }
 }

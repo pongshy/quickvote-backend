@@ -27,4 +27,6 @@ public interface UserDOMapper {
     int updateByPrimaryKeySelective(UserDO record);
 
     int updateByPrimaryKey(UserDO record);
+
+//    List<String> selectWNameByOpenid(List<String> openidList);
 }

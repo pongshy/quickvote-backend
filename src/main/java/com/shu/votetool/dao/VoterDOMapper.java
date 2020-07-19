@@ -27,4 +27,6 @@ public interface VoterDOMapper {
     int updateByPrimaryKeySelective(VoterDO record);
 
     int updateByPrimaryKey(VoterDO record);
+
+    List<String> selectUnvoteBy(Integer id);
 }

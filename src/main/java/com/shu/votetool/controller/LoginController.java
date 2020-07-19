@@ -7,6 +7,7 @@ import com.shu.votetool.model.request.UserInfo;
 import com.shu.votetool.model.response.ErrorResult;
 import com.shu.votetool.service.LoginService;
 import com.shu.votetool.tool.ResultTool;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,4 +65,16 @@ public class LoginController {
         return loginService.updateUserInfo(openid, userInfo);
     }
 
+    /*
+      * @Description: 获取小程序全局唯一后台接口调用凭据（access_token）
+      * @Param: []
+      * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+      * @Author: pongshy
+      * @Date: 2020/7/19
+     **/
+    @ApiOperation(value = "获取小程序全局唯一后台接口调用凭据（access_token）", httpMethod = "GET")
+    @GetMapping("/access_token")
+    public ResponseEntity<Object> getAccessToken() throws AllException {
+        return loginService.getAccessToken();
+    }
 }

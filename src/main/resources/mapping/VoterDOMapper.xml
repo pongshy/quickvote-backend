@@ -179,4 +179,9 @@
       vote_id = #{voteId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectUnvoteBy" parameterType="integer" resultType="java.lang.String">
+    select voter.openid from voter
+    where vote_id = #{id,jdbcType=INTEGER}
+    and voter.openid not in (select vote_record.openid from vote_record where vote_id = #{id,jdbcType=INTEGER})
+  </select>
 </mapper>

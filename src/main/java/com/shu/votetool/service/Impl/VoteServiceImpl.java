@@ -22,10 +22,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -452,6 +449,13 @@ public class VoteServiceImpl implements VoteService {
         }
     }
 
+    /*
+     * @Description: 获取用户参与的投票项目数与发起的投票项目数
+     * @Param: [openid]
+     * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+     * @Author: pongshy
+     * @Date: 2020/7/18
+     **/
     @Override
     public ResponseEntity<Object> getUserVoteNum(String openid) {
         try {
@@ -513,6 +517,50 @@ public class VoteServiceImpl implements VoteService {
         } catch (AllException ex) {
             log.info(ex.getMsg());
             return new ResponseEntity<>(new ErrorResult(ex, "/vote/voteSystemNum"), HttpStatus.OK);
+        }
+    }
+
+    /*
+     * @Description: 获取未投人员名单
+     * @Param: [Integer]
+     * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
+     * @Author: pongshy
+     * @Date: 2020/7/18
+     **/
+    @Override
+    public ResponseEntity<Object> getUninvestedPersons(Integer id) {
+        try {
+            if (id < 0) {
+                throw new AllException(EmAllException.BAD_REQUEST, "id为空");
+            }
+            List<String> openid_list = voterDOMapper.selectUnvoteBy(id);
+            List<UnVotePersonsVO> voList = new ArrayList<>();
+
+            if (openid_list == null || openid_list.isEmpty()) {
+                return new ResponseEntity<>(voList, HttpStatus.OK);
+            } else {
+                UserDOExample userDOExample = new UserDOExample();
+
+                userDOExample.createCriteria()
+                        .andOpenidIn(openid_list);
+                List<UserDO> userDOList = userDOMapper.selectByExample(userDOExample);
+
+                for (UserDO userDO : userDOList) {
+                    UnVotePersonsVO unVotePersonsVO = new UnVotePersonsVO();
+
+                    unVotePersonsVO.setWimage(userDO.getWimage());
+                    unVotePersonsVO.setWname(userDO.getWname());
+                    unVotePersonsVO.setOpenid(userDO.getOpenid());
+
+                    voList.add(unVotePersonsVO);
+                }
+
+                return new ResponseEntity<>(voList, HttpStatus.OK);
+            }
+        }
+        catch (AllException ex) {
+            log.info(ex.getMsg());
+            return new ResponseEntity<>(new ErrorResult(ex, "/vote/uninvested"), HttpStatus.OK);
         }
     }
 }
