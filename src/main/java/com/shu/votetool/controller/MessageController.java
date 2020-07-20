@@ -36,7 +36,7 @@ public class MessageController {
      * @createTime: 2020/7/20 10:54
      */
     @GetMapping("/send")
-    public ResponseEntity<Object> sendMessage(@RequestHeader("access_token") String access_token,
+    public ResponseEntity<Object> sendMessage(@RequestHeader("accessToken") String access_token,
                                               @RequestHeader("openid") String openid,
                                               @RequestParam(value = "id", defaultValue = "-1") Integer id) {
 
