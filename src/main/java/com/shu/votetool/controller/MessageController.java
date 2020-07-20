@@ -30,7 +30,7 @@ public class MessageController {
     
     /*
      * @Description: 向未投票用户发送消息提醒
-     * @Param: []
+     * @Param: [Integer]
      * @Return: org.springframework.http.ResponseEntity<java.lang.Object>
      * @Author: pongshy
      * @createTime: 2020/7/20 10:54
@@ -40,7 +40,7 @@ public class MessageController {
                                               @RequestHeader("openid") String openid,
                                               @RequestParam(value = "id", defaultValue = "-1") Integer id) {
 
-        return messageService.sendMsg(access_token, openid, id);
+        return messageService.sendMsg(openid, id);
     }
 
 

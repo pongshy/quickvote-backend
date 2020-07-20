@@ -133,4 +133,5 @@ public class VoteController {
     public ResponseEntity<Object> getUninvested(@RequestParam(value = "id", defaultValue = "-1") Integer id) {
         return voteService.getUninvestedPersons(id);
     }
+
 }

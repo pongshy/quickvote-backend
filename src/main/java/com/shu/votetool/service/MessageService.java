@@ -15,5 +15,5 @@ public interface MessageService {
      * @Author: pongshy
      * @createTime: 2020/7/20 12:41
      */
-    public ResponseEntity<Object> sendMsg(String access_token, String openid, Integer id);
+    public ResponseEntity<Object> sendMsg(String openid, Integer id);
 }

@@ -40,6 +40,12 @@ public class MessageServiceImpl implements MessageService {
     @Value("${wx.page}")
     private String page;
 
+    @Value("${wx.AppId}")
+    private String AppId;
+
+    @Value("${wx.secret}")
+    private String secret;
+
     @Resource
     private VoteSystemDOMapper voteSystemDOMapper;
 
@@ -54,11 +60,9 @@ public class MessageServiceImpl implements MessageService {
      * @createTime: 2020/7/20 12:41
      */
     @Override
-    public ResponseEntity<Object> sendMsg(String access_token, String openid, Integer id) {
+    public ResponseEntity<Object> sendMsg(String openid, Integer id) {
         try {
-            if (StringUtils.isEmpty(access_token)) {
-                throw new AllException(EmAllException.BAD_REQUEST, "access_token为空");
-            }
+            String access_token = WXApiTool.getAccessToken(AppId, secret);
             if (StringUtils.isEmpty(openid)) {
                 throw new AllException(EmAllException.BAD_REQUEST, "openid为空");
             }
