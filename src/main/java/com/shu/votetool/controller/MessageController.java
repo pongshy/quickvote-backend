@@ -38,7 +38,7 @@ public class MessageController {
     @GetMapping("/send")
     public ResponseEntity<Object> sendMessage(@RequestHeader("accessToken") String access_token,
                                               @RequestHeader("openid") String openid,
-                                              @RequestHeader("id") Integer id) {
+                                              @RequestParam(value = "id", defaultValue = "-1") Integer id) {
 
         return messageService.sendMsg(access_token, openid, id);
     }
