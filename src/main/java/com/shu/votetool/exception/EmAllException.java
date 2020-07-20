@@ -16,7 +16,10 @@ public enum EmAllException implements CommonError {
 
     ErrorCode(400, " wx.login接口返回", HttpStatus.BAD_REQUEST),
 
-    INTERNAL_ERROR(500, "程序内部错误", HttpStatus.INTERNAL_SERVER_ERROR);
+    INTERNAL_ERROR(500, "程序内部错误", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    USER_REFUSE(503, "服务器无法处理请求", HttpStatus.SERVICE_UNAVAILABLE);
+
 
 
 
