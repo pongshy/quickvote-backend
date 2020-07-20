@@ -195,73 +195,88 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public ResponseEntity<Object> voteSystemList(VoteSystemListReq voteSystemListReq, String openid) {
         try{
+            VoteSystemList voteSystemList = new VoteSystemList();
             List<VoteSystemDO> voteSystemDOList = null;
+            int fromIndex = voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage();
+            int endIndex = fromIndex + voteSystemListReq.getPerPageNum();
+
             if(voteSystemListReq.getType() == 0){
-                if(voteSystemListReq.getStrRequired().isEmpty()){
-                    VoterDOExample voterDOExample = new VoterDOExample();
-                    voterDOExample.createCriteria().andOpenidEqualTo(openid);
-                    voterDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
-                            + ", " + voteSystemListReq.getPerPageNum());
-                    List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
-                    if(voterDOList == null){
-                        throw new AllException(EmAllException.DATABASE_ERROR);
-                    }
-
-                    if(voterDOList.isEmpty()){
-                        throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
-                    }
-
-                    List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
-                    HashSet<Integer> hashSet = new HashSet<Integer>(voteSystemIdList);
-                    voteSystemIdList.clear();
-                    voteSystemIdList.addAll(hashSet);
-
-                    VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
-                    voteSystemDOExample.createCriteria().andIdIn(voteSystemIdList);
-                    voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
-                }else {
-                    VoterDOExample voterDOExample = new VoterDOExample();
-                    voterDOExample.createCriteria().andOpenidEqualTo(openid);
-                    voterDOExample.setOrderByClause("id DESC");
-                    List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
-                    if(voterDOList == null){
-                        throw new AllException(EmAllException.DATABASE_ERROR);
-                    }
-
-                    if(voterDOList.isEmpty()){
-                        throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
-                    }
-
-                    List<Integer> voteSystemIdList = voterDOList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
-                    HashSet<Integer> hashSet = new HashSet<Integer>(voteSystemIdList);
-                    voteSystemIdList.clear();
-                    voteSystemIdList.addAll(hashSet);
-
-                    VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
-                    voteSystemDOExample.createCriteria()
-                            .andIdIn(voteSystemIdList)
-                            .andVoteNameLike("%" + voteSystemListReq.getStrRequired() + "%");
-                    voteSystemDOExample.setOrderByClause("QUERYID ASC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
-                                    +", " + voteSystemListReq.getPerPageNum());
-                    voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
-
+                VoterDOExample voterDOExample = new VoterDOExample();
+                voterDOExample.createCriteria().andOpenidEqualTo(openid);
+                voterDOExample.setOrderByClause("id DESC");
+                List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
+                if(voterDOList == null){
+                    throw new AllException(EmAllException.DATABASE_ERROR);
                 }
+                if(voterDOList.isEmpty()){
+                    throw new AllException(EmAllException.DATABASE_ERROR, "您还未参加过投票！");
+                }
+
+                //去重
+                List<VoterDO> filterVoterList = new ArrayList<>();
+                for(VoterDO voterDO: voterDOList){
+                    if(filterVoterList.isEmpty() || !filterVoterList.get(filterVoterList.size() - 1).getVoteId().equals(voterDO.getVoteId())){
+                        filterVoterList.add(voterDO);
+                    }
+                }
+
+                //所需id列表
+                List<Integer> needVoteIdList = filterVoterList.stream().map(VoterDO::getVoteId).collect(Collectors.toList());
+
+                //若不需要搜索字符串，加快搜索速度
+                if(voteSystemListReq.getStrRequired().isEmpty()){
+                    voteSystemList.setNum(needVoteIdList.size());
+                    needVoteIdList = needVoteIdList.subList(fromIndex, Math.min(endIndex, needVoteIdList.size()));
+                }
+
+                //准备查询
+                VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
+                VoteSystemDOExample.Criteria criteria = voteSystemDOExample.createCriteria().andIdIn(needVoteIdList);
+                //若有需查询的字符串
+                if(!voteSystemListReq.getStrRequired().isEmpty()){
+                    criteria.andVoteNameLike("%" + voteSystemListReq.getStrRequired() + "%");
+                }
+
+                //查询
+                voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
+                if(voteSystemDOList == null || voterDOList.isEmpty()){
+                    throw new AllException(EmAllException.BAD_REQUEST, "当前无数据");
+                }
+
+                //若有需查询的字符串，进行分页
+                if(!voteSystemListReq.getStrRequired().isEmpty()){
+                    voteSystemList.setNum(voteSystemDOList.size());
+                    voteSystemDOList = voteSystemDOList.subList(fromIndex, Math.min(endIndex, voteSystemDOList.size()));
+                }
+
+                //按照needVoteIdList的顺序给结果排序
+                Map<Integer, VoteSystemDO> voteSystemListMap = voteSystemDOList.stream().collect(Collectors.toMap(VoteSystemDO::getId, voteSystemDO -> voteSystemDO));
+                voteSystemDOList.clear();
+                for(Integer id: needVoteIdList){
+                    VoteSystemDO voteSystemDO = voteSystemListMap.get(id);
+                    if(voteSystemDO != null){
+                        voteSystemDOList.add(voteSystemDO);
+                    }
+                }
+
             }else if(voteSystemListReq.getType() == 1){
                 VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
                 VoteSystemDOExample.Criteria criteria = voteSystemDOExample.createCriteria()
                         .andOpenidEqualTo(openid);
+                voteSystemDOExample.setOrderByClause("id DESC");
                 if(!voteSystemListReq.getStrRequired().isEmpty()){
                     criteria.andVoteNameLike("%" + voteSystemListReq.getStrRequired() + "%");
                 }
-                voteSystemDOExample.setOrderByClause("id DESC limit " + voteSystemListReq.getPerPageNum() * voteSystemListReq.getPage()
-                        + ", " + voteSystemListReq.getPerPageNum());
                 voteSystemDOList = voteSystemDOMapper.selectByExample(voteSystemDOExample);
+                if(voteSystemDOList == null){
+                    throw new AllException(EmAllException.DATABASE_ERROR, "您未参与过已知的投票项目!");
+                }
+
+                voteSystemList.setNum(voteSystemDOList.size());
+
+                voteSystemDOList = voteSystemDOList.subList(fromIndex, Math.min(endIndex, voteSystemDOList.size()));
             }else {
                 throw new AllException(EmAllException.DATABASE_ERROR);
-            }
-
-            if(voteSystemDOList == null){
-                throw new AllException(EmAllException.DATABASE_ERROR, "您未参与过已知的投票项目!");
             }
 
             List<String> openIdList = voteSystemDOList.stream().map(VoteSystemDO::getOpenid).collect(Collectors.toList());
@@ -281,8 +296,6 @@ public class VoteServiceImpl implements VoteService {
             }
 
             //获取所有投票的投票对象列表
-            VoteSystemList voteSystemList = new VoteSystemList();
-            voteSystemList.setNum(voteSystemDOList.size());
             voteSystemList.setVoteSystemResList(voteSystemDOList.stream().map(voteSystemDO -> {
                 VoteSystemRes voteSystemRes = new VoteSystemRes();
                 BeanUtils.copyProperties(voteSystemDO, voteSystemRes);
