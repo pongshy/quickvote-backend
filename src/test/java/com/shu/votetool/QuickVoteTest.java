@@ -25,11 +25,6 @@ public class QuickVoteTest
     @Resource
     private MessageService messageService;
 
-    private String template_id = "sXy0g2ARYkRLlN1tlSFDsm-H5F1oOEj4kS0UhWYRp2s";
-
-    private String AppId = "wx98f3a01b37dc2567";
-
-    private String secret = "c73adbeb232f81ea604d554e8c4fabdf";
 
     @Test
     public void shouldAnswerWithTrue() throws IOException, AllException {
