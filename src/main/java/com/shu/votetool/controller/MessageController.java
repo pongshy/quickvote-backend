@@ -40,7 +40,7 @@ public class MessageController {
                                               @RequestHeader("openid") String openid,
                                               @RequestParam(value = "id", defaultValue = "-1") Integer id) {
 
-        return messageService.sendMsg(access_token, openid, id);
+        return messageService.sendMsg(openid, id);
     }
 
 
