@@ -29,7 +29,6 @@ public class QuickVoteTest
     @Test
     public void shouldAnswerWithTrue() throws IOException, AllException {
 //        String access_token = WXApiTool.getAccessToken(AppId, secret);
-//        String openid = "oQKKb5RSR3SAbjxbHJnzMxmCnt1k";
 //        System.out.println(messageService.sendMsg(access_token, openid));
 
         assertTrue( true );
