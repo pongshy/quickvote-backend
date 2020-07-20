@@ -473,7 +473,6 @@ public class VoteServiceImpl implements VoteService {
 
                 VoterDOExample voterDOExample = new VoterDOExample();
                 voterDOExample.createCriteria()
-                        .andVoteIdNotIn(idList)
                         .andOpenidEqualTo(openid);
                 int count = voterDOMapper.countByExample(voterDOExample);
                 response.setVotingNum(count);
