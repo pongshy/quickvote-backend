@@ -18,5 +18,7 @@ public class VoteDetailRes extends VoteSystemRes{
 
     private List<VoteRecordVO> voteRecordVOList;
 
+    private List<VoteRecordVO> myVoteRecordVoList;
+    
     private String wxName;
 }

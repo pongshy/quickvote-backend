@@ -312,7 +312,7 @@ public class VoteServiceImpl implements VoteService {
     * @Date: 2020/7/16
     */
     @Override
-    public ResponseEntity<Object> voteSystemDetail(int id) {
+    public ResponseEntity<Object> voteSystemDetail(int id, String openid) {
         try{
             VoteSystemDOExample voteSystemDOExample = new VoteSystemDOExample();
             voteSystemDOExample.createCriteria().andIdEqualTo(id);
@@ -358,6 +358,7 @@ public class VoteServiceImpl implements VoteService {
                 voteRecordVO.setVoteTime(TimeTool.timeToSecond(voteRecordDO.getVoteTime()));
                 return voteRecordVO;
             }).collect(Collectors.toList()));
+            voteDetailRes.setMyVoteRecordVoList(voteDetailRes.getVoteRecordVOList().stream().filter(voteRecordVO -> voteRecordVO.getOpenid().equals(openid)).collect(Collectors.toList()));
 
             UserDO userDO = userDOMapper.selectByPrimaryKey(voteDetailRes.getOpenid());
             if(userDO == null){

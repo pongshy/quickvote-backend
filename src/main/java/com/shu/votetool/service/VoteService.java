@@ -50,7 +50,7 @@ public interface VoteService {
     * @Author: SoCMo
     * @Date: 2020/7/16
     */
-    public ResponseEntity<Object> voteSystemDetail(int id);
+    public ResponseEntity<Object> voteSystemDetail(int id, String openid);
 
     /** 
     * @Description: 投票 

@@ -90,8 +90,9 @@ public class VoteController {
     */
     @ApiOperation(value = "获取投票详情", httpMethod = "GET")
     @GetMapping("/voteDetail")
-    public ResponseEntity<Object> voteDetail(@RequestParam Integer id){
-        return voteService.voteSystemDetail(id);
+    public ResponseEntity<Object> voteDetail(@RequestParam Integer id,
+                                             @RequestHeader("openid") String openid){
+        return voteService.voteSystemDetail(id, openid);
     }
 
     /*
