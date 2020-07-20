@@ -20,6 +20,7 @@ public class NumberTool {
      * @Date: 2020/2/23
      */
     public static String doubleToStringWithH(Double number) {
+        if(number == null) return "0%";
         return String.format("%.1f", number * 100) + "%";
     }
 
@@ -31,6 +32,7 @@ public class NumberTool {
      * @Date: 2020/2/23
      */
     public static String doubleToStringWotH(Double number) {
+        if(number == null) return "0%";
         return String.format("%.1f", number);
     }
 
@@ -42,6 +44,7 @@ public class NumberTool {
      * @Date: 2020/2/23
      */
     public static Double intDivision(Integer a, Integer b) {
+        if(b == 0) return null;
         return (double) a / (double) b;
     }
 
