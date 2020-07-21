@@ -295,6 +295,15 @@ public class VoteServiceImpl implements VoteService {
                 throw new AllException(EmAllException.DATABASE_ERROR);
             }
 
+            List<Integer> voteIdList = voteSystemDOList.stream().map(VoteSystemDO::getId).collect(Collectors.toList());
+            VoterDOExample voterDOExample = new VoterDOExample();
+            voterDOExample.createCriteria().andVoteIdIn(voteIdList);
+            List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
+            if(voterDOList == null){
+                throw new AllException(EmAllException.DATABASE_ERROR);
+            }
+
+
             //获取所有投票的投票对象列表
             voteSystemList.setVoteSystemResList(voteSystemDOList.stream().map(voteSystemDO -> {
                 VoteSystemRes voteSystemRes = new VoteSystemRes();
@@ -305,6 +314,7 @@ public class VoteServiceImpl implements VoteService {
                 voteSystemRes.setHeadImg(userDOMap.get(voteSystemDO.getOpenid()).getWimage());
                 List<CandidateDO> CandidateListNeed = candidateDOList.stream().filter(candidateDO -> candidateDO.getVoteId().equals(voteSystemDO.getId())).collect(Collectors.toList());
 
+                voteSystemRes.setVoterNum((int) voterDOList.stream().filter(voterDO -> voterDO.getVoteId().equals(voteSystemDO.getId())).count());
                 voteSystemRes.setCandidateNum(CandidateListNeed.size());
                 voteSystemRes.setReceivedVote(CandidateListNeed.stream().mapToInt(CandidateDO::getAgree).sum());
                 return voteSystemRes;
