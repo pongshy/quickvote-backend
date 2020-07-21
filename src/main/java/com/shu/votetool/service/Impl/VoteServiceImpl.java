@@ -309,7 +309,9 @@ public class VoteServiceImpl implements VoteService {
                 VoteSystemRes voteSystemRes = new VoteSystemRes();
                 BeanUtils.copyProperties(voteSystemDO, voteSystemRes);
                 voteSystemRes.setStartTime(TimeTool.timeToSecond(voteSystemDO.getStartTime()));
+                voteSystemRes.setStartTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getStartTime()));
                 voteSystemRes.setEndTime(TimeTool.timeToSecond(voteSystemDO.getEndTime()));
+                voteSystemRes.setEndTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getEndTime()));
                 voteSystemRes.setCreateTime(TimeTool.timeToSecond(voteSystemDO.getCreateTime()));
                 voteSystemRes.setHeadImg(userDOMap.get(voteSystemDO.getOpenid()).getWimage());
                 List<CandidateDO> CandidateListNeed = candidateDOList.stream().filter(candidateDO -> candidateDO.getVoteId().equals(voteSystemDO.getId())).collect(Collectors.toList());
@@ -348,6 +350,7 @@ public class VoteServiceImpl implements VoteService {
             VoteSystemDO voteSystemDO = voteSystemList.get(0);
             BeanUtils.copyProperties(voteSystemDO, voteDetailRes);
             voteDetailRes.setStartTime(TimeTool.timeToSecond(voteSystemDO.getStartTime()));
+            voteDetailRes.setStartTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getStartTime()));
             voteDetailRes.setEndTime(TimeTool.timeToSecond(voteSystemDO.getEndTime()));
             voteDetailRes.setEndTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getEndTime()));
             voteDetailRes.setCreateTime(TimeTool.timeToSecond(voteSystemDO.getCreateTime()));

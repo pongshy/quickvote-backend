@@ -22,6 +22,8 @@ public class VoteSystemRes {
 
     private String startTime;
 
+    private String startTimeFormat;
+
     private String endTime;
 
     private String endTimeFormat;
