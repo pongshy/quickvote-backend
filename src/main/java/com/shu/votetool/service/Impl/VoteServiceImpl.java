@@ -295,16 +295,28 @@ public class VoteServiceImpl implements VoteService {
                 throw new AllException(EmAllException.DATABASE_ERROR);
             }
 
+            List<Integer> voteIdList = voteSystemDOList.stream().map(VoteSystemDO::getId).collect(Collectors.toList());
+            VoterDOExample voterDOExample = new VoterDOExample();
+            voterDOExample.createCriteria().andVoteIdIn(voteIdList);
+            List<VoterDO> voterDOList = voterDOMapper.selectByExample(voterDOExample);
+            if(voterDOList == null){
+                throw new AllException(EmAllException.DATABASE_ERROR);
+            }
+
+
             //获取所有投票的投票对象列表
             voteSystemList.setVoteSystemResList(voteSystemDOList.stream().map(voteSystemDO -> {
                 VoteSystemRes voteSystemRes = new VoteSystemRes();
                 BeanUtils.copyProperties(voteSystemDO, voteSystemRes);
                 voteSystemRes.setStartTime(TimeTool.timeToSecond(voteSystemDO.getStartTime()));
+                voteSystemRes.setStartTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getStartTime()));
                 voteSystemRes.setEndTime(TimeTool.timeToSecond(voteSystemDO.getEndTime()));
+                voteSystemRes.setEndTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getEndTime()));
                 voteSystemRes.setCreateTime(TimeTool.timeToSecond(voteSystemDO.getCreateTime()));
                 voteSystemRes.setHeadImg(userDOMap.get(voteSystemDO.getOpenid()).getWimage());
                 List<CandidateDO> CandidateListNeed = candidateDOList.stream().filter(candidateDO -> candidateDO.getVoteId().equals(voteSystemDO.getId())).collect(Collectors.toList());
 
+                voteSystemRes.setVoterNum((int) voterDOList.stream().filter(voterDO -> voterDO.getVoteId().equals(voteSystemDO.getId())).count());
                 voteSystemRes.setCandidateNum(CandidateListNeed.size());
                 voteSystemRes.setReceivedVote(CandidateListNeed.stream().mapToInt(CandidateDO::getAgree).sum());
                 return voteSystemRes;
@@ -338,6 +350,7 @@ public class VoteServiceImpl implements VoteService {
             VoteSystemDO voteSystemDO = voteSystemList.get(0);
             BeanUtils.copyProperties(voteSystemDO, voteDetailRes);
             voteDetailRes.setStartTime(TimeTool.timeToSecond(voteSystemDO.getStartTime()));
+            voteDetailRes.setStartTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getStartTime()));
             voteDetailRes.setEndTime(TimeTool.timeToSecond(voteSystemDO.getEndTime()));
             voteDetailRes.setEndTimeFormat(TimeTool.timeToSecondWX(voteSystemDO.getEndTime()));
             voteDetailRes.setCreateTime(TimeTool.timeToSecond(voteSystemDO.getCreateTime()));
